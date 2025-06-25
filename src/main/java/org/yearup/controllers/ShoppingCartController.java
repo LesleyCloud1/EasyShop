@@ -89,5 +89,25 @@ public class ShoppingCartController
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update product in cart.");
         }
     }
+    @DeleteMapping("")
+    public void clearCart(Principal principal)
+    {
+        try
+        {
+            //Get the currently logged-in username
+            String userName = principal.getName();
+
+            //Find the user and get their user ID
+            User user = userDao.getByUserName(userName);
+            int userId = user.getId();
+
+            //Clear all items from the cart
+            shoppingCartDao.clearCart(userId);
+        }
+        catch (Exception e)
+        {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to clear the shopping cart.");
+        }
+    }
 
 }
