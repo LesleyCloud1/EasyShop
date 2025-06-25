@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yearup.models.Product;
 import org.yearup.data.ProductDao;
-
+import org.springframework.web.bind.annotation.GetMapping;
 import java.math.BigDecimal;
 import java.util.List;
 
