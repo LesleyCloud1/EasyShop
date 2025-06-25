@@ -60,11 +60,10 @@ public class CategoriesController
     // add annotation to ensure that only an ADMIN can call this function
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public void updateCategory(@PathVariable int id, @RequestBody Category category) {
-        categoryDao.update(id, category); // Implement in DAO
+    public Category updateCategory(@PathVariable int id, @RequestBody Category category) {
+        categoryDao.update(id, category);           // perform the update
+        return categoryDao.getById(id);             // return the updated category
     }
-
-
 
     // add annotation to call this method for a DELETE action - the url path must include the categoryId
     // add annotation to ensure that only an ADMIN can call this function

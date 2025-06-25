@@ -25,10 +25,9 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     }
 
     @Override
-    public Category getById(int categoryId)
-    {
-        // get category by id
-        return null;
+    public Category getById(int categoryId) {
+        String sql = "SELECT * FROM categories WHERE category_id = ?";
+        return jdbcTemplate.queryForObject(sql, new CategoryMapper(), categoryId);
     }
 
     @Override
