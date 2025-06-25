@@ -1,13 +1,12 @@
 package org.yearup.controllers;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import org.yearup.data.CategoryDao;
 import org.yearup.data.ProductDao;
 import org.yearup.models.Category;
 import org.yearup.models.Product;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @RestController
@@ -26,7 +25,11 @@ public class CategoriesController
         this.categoryDao = categoryDao;
         this.productDao = productDao;
     }
-
+    // GET /categories - returns a list of all categories
+    @GetMapping("")
+    public List<Category> getAll() {
+        return categoryDao.getAllCategories(); // This should call your DAO method
+    }
 
     // add the appropriate annotation for a get action
     @GetMapping("{id}")
