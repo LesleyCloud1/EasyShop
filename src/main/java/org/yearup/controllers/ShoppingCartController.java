@@ -32,6 +32,11 @@ public class ShoppingCartController
         this.productDao = productDao;
     }
 
+    @GetMapping("/ping")
+    public String ping() {
+        return "Cart is active";
+    }
+
     @GetMapping("")
     public ShoppingCart getCart(Principal principal)
     {
@@ -44,19 +49,23 @@ public class ShoppingCartController
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
     }
 
     @PostMapping("/products/{productId}")
-    public void addToCart(@PathVariable int productId, Principal principal)
+    public ShoppingCart addToCart(@PathVariable int productId, Principal principal)
     {
         try
         {
             String userName = principal.getName();
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
+
             shoppingCartDao.addProduct(userId, productId);
+
+            return shoppingCartDao.getByUserId(userId); // ✅ return updated cart
         }
         catch (Exception e)
         {
@@ -80,6 +89,7 @@ public class ShoppingCartController
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update product in cart.");
         }
     }
+
     @DeleteMapping("")
     public void clearCart(Principal principal)
     {
