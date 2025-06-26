@@ -72,14 +72,14 @@ public class ShoppingCartController
             String userName = principal.getName();
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
-            shoppingCartDao.update(userId, productId, item.getQuantity());
+
+            shoppingCartDao.updateQuantity(userId, productId, item.getQuantity());
         }
         catch (Exception e)
         {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update product in cart.");
         }
     }
-
     @DeleteMapping("")
     public void clearCart(Principal principal)
     {
