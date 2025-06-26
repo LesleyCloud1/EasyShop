@@ -36,11 +36,26 @@ public class ShoppingCart
     public BigDecimal getTotal()
     {
         BigDecimal total = items.values()
-                                .stream()
-                                .map(i -> i.getLineTotal())
-                                .reduce( BigDecimal.ZERO, (lineTotal, subTotal) -> subTotal.add(lineTotal));
+                .stream()
+                .map(i -> i.getLineTotal())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return total;
     }
 
+    public void addToCart(Product product, int quantity)
+    {
+        int productId = product.getProductId();
+
+        if (items.containsKey(productId))
+        {
+            ShoppingCartItem item = items.get(productId);
+            item.setQuantity(item.getQuantity() + quantity);
+        }
+        else
+        {
+            ShoppingCartItem item = new ShoppingCartItem(product, quantity);
+            items.put(productId, item);
+        }
+    }
 }
