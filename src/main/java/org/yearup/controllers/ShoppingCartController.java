@@ -9,6 +9,7 @@ import org.yearup.data.ProductDao;
 import org.yearup.data.ShoppingCartDao;
 import org.yearup.data.UserDao;
 import org.yearup.models.ShoppingCart;
+import org.yearup.models.ShoppingCartItem;
 import org.yearup.models.User;
 
 import java.security.Principal;
@@ -19,9 +20,9 @@ import java.security.Principal;
 @PreAuthorize("isAuthenticated()")
 public class ShoppingCartController
 {
-    private ShoppingCartDao shoppingCartDao;
-    private UserDao userDao;
-    private ProductDao productDao;
+    private final ShoppingCartDao shoppingCartDao;
+    private final UserDao userDao;
+    private final ProductDao productDao;
 
     @Autowired
     public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao, ProductDao productDao)
@@ -36,14 +37,9 @@ public class ShoppingCartController
     {
         try
         {
-            //Get the currently logged-in username
             String userName = principal.getName();
-
-            //Find the database user by username
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
-
-            //Use the shoppingCartDao to get all items in the cart and return it
             return shoppingCartDao.getByUserId(userId);
         }
         catch (Exception e)
@@ -57,14 +53,9 @@ public class ShoppingCartController
     {
         try
         {
-            // Get the currently logged-in username
             String userName = principal.getName();
-
-            // Find the user and get their user ID
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
-
-            // Add the product to the cart
             shoppingCartDao.addProduct(userId, productId);
         }
         catch (Exception e)
@@ -72,6 +63,7 @@ public class ShoppingCartController
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to add product to cart.");
         }
     }
+
     @PutMapping("/products/{productId}")
     public void updateCartItem(@PathVariable int productId, @RequestBody ShoppingCartItem item, Principal principal)
     {
@@ -80,8 +72,6 @@ public class ShoppingCartController
             String userName = principal.getName();
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
-
-            // Update the quantity of the specified item in the user's cart
             shoppingCartDao.update(userId, productId, item.getQuantity());
         }
         catch (Exception e)
@@ -89,25 +79,20 @@ public class ShoppingCartController
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update product in cart.");
         }
     }
+
     @DeleteMapping("")
     public void clearCart(Principal principal)
     {
         try
         {
-            //Get the currently logged-in username
             String userName = principal.getName();
-
-            //Find the user and get their user ID
             User user = userDao.getByUserName(userName);
             int userId = user.getId();
-
-            //Clear all items from the cart
             shoppingCartDao.clearCart(userId);
         }
         catch (Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to clear the shopping cart.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to clear cart.");
         }
     }
-
 }
