@@ -32,77 +32,40 @@ public class ShoppingCartController
         this.productDao = productDao;
     }
 
-    @GetMapping("/ping")
-    public String ping() {
-        return "Cart is active";
-    }
-
     @GetMapping("")
     public ShoppingCart getCart(Principal principal)
     {
-        try
-        {
-            String userName = principal.getName();
-            User user = userDao.getByUserName(userName);
-            int userId = user.getId();
-            return shoppingCartDao.getByUserId(userId);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
-        }
+        String userName = principal.getName();
+        User user = userDao.getByUserName(userName);
+        return shoppingCartDao.getByUserId(user.getId());
     }
 
     @PostMapping("/products/{productId}")
     public ShoppingCart addToCart(@PathVariable int productId, Principal principal)
     {
-        try
-        {
-            String userName = principal.getName();
-            User user = userDao.getByUserName(userName);
-            int userId = user.getId();
+        String userName = principal.getName();
+        User user = userDao.getByUserName(userName);
 
-            shoppingCartDao.addProduct(userId, productId);
+        shoppingCartDao.addProduct(user.getId(), productId);
 
-            return shoppingCartDao.getByUserId(userId); // ✅ return updated cart
-        }
-        catch (Exception e)
-        {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to add product to cart.");
-        }
+        return shoppingCartDao.getByUserId(user.getId());
     }
 
     @PutMapping("/products/{productId}")
     public void updateCartItem(@PathVariable int productId, @RequestBody ShoppingCartItem item, Principal principal)
     {
-        try
-        {
-            String userName = principal.getName();
-            User user = userDao.getByUserName(userName);
-            int userId = user.getId();
+        String userName = principal.getName();
+        User user = userDao.getByUserName(userName);
 
-            shoppingCartDao.updateQuantity(userId, productId, item.getQuantity());
-        }
-        catch (Exception e)
-        {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update product in cart.");
-        }
+        shoppingCartDao.updateQuantity(user.getId(), productId, item.getQuantity());
     }
 
     @DeleteMapping("")
     public void clearCart(Principal principal)
     {
-        try
-        {
-            String userName = principal.getName();
-            User user = userDao.getByUserName(userName);
-            int userId = user.getId();
-            shoppingCartDao.clearCart(userId);
-        }
-        catch (Exception e)
-        {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to clear cart.");
-        }
+        String userName = principal.getName();
+        User user = userDao.getByUserName(userName);
+
+        shoppingCartDao.clearCart(user.getId());
     }
 }

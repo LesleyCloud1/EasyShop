@@ -13,8 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/categories")
 @CrossOrigin
-public class CategoriesController
-{
+public class CategoriesController {
     private final CategoryDao categoryDao;
     private final ProductDao productDao;
 
@@ -41,3 +40,4 @@ public class CategoriesController
     public List<Product> getProductsById(@PathVariable int categoryId) {
         return productDao.listByCategoryId(categoryId);
     }
+}
