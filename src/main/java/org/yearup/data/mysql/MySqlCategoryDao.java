@@ -34,14 +34,13 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     public Category create(Category category)
     {
         String sql = "INSERT INTO categories (name, description) VALUES (?, ?)";
-
         jdbcTemplate.update(sql,
                 category.getName(),
                 category.getDescription());
-        System.out.println("Category inserted: " + category.getName());
 
-        return category;
-
+        // Fetch the latest inserted category
+        String getIdSql = "SELECT * FROM categories ORDER BY category_id DESC LIMIT 1";
+        return jdbcTemplate.queryForObject(getIdSql, new CategoryMapper());
     }
 
     @Override

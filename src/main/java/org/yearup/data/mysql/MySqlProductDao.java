@@ -19,46 +19,52 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
     }
 
     @Override
-    public List<Product> search(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice, String color)
-    {
+    public List<Product> search(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice, String color) {
         List<Product> products = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM products WHERE 1=1");
 
-        String sql = "SELECT * FROM products " +
-                "WHERE (category_id = ? OR ? = -1) " +
-                "   AND (price <= ? OR ? = -1) " +
-                "   AND (color = ? OR ? = '') ";
+        if (categoryId != null) {
+            sql.append(" AND category_id = ?");
+        }
+        if (minPrice != null) {
+            sql.append(" AND price >= ?");
+        }
+        if (maxPrice != null) {
+            sql.append(" AND price <= ?");
+        }
+        if (color != null && !color.isEmpty()) {
+            sql.append(" AND color = ?");
+        }
 
-        categoryId = categoryId == null ? -1 : categoryId;
-        minPrice = minPrice == null ? new BigDecimal("-1") : minPrice;
-        maxPrice = maxPrice == null ? new BigDecimal("-1") : maxPrice;
-        color = color == null ? "" : color;
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql.toString());
+            int index = 1;
 
-        try (Connection connection = getConnection())
-        {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, categoryId);
-            statement.setInt(2, categoryId);
-            statement.setBigDecimal(3, minPrice);
-            statement.setBigDecimal(4, minPrice);
-            statement.setString(5, color);
-            statement.setString(6, color);
+            if (categoryId != null) {
+                statement.setInt(index++, categoryId);
+            }
+            if (minPrice != null) {
+                statement.setBigDecimal(index++, minPrice);
+            }
+            if (maxPrice != null) {
+                statement.setBigDecimal(index++, maxPrice);
+            }
+            if (color != null && !color.isEmpty()) {
+                statement.setString(index++, color);
+            }
 
             ResultSet row = statement.executeQuery();
 
-            while (row.next())
-            {
-                Product product = mapRow(row);
-                products.add(product);
+            while (row.next()) {
+                products.add(mapRow(row));
             }
-        }
-        catch (SQLException e)
-        {
+
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         return products;
     }
-
     @Override
     public List<Product> listByCategoryId(int categoryId)
     {
